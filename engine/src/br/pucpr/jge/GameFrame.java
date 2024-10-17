@@ -1,18 +1,9 @@
 package br.pucpr.jge;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-
-import static java.awt.event.KeyEvent.*;
 
 public class GameFrame extends JFrame {
     private Steps game;
@@ -42,13 +33,19 @@ public class GameFrame extends JFrame {
 
     private void gameLoop() {
         try {
+            var manager = GameManager.getInstance();
             game.load();
             var time = 1L;
             while (true) {
                 var before = System.currentTimeMillis();
-                if (!game.update(time / 1000.0, input)) break;
+                var s = time / 1000.0;
+                if (!game.update(s, input)) break;
+                manager.update(s, input);
 
-                game.draw((Graphics2D) getBufferStrategy().getDrawGraphics());
+                var g2d = (Graphics2D) getBufferStrategy().getDrawGraphics();
+                game.draw(g2d);
+                manager.draw(g2d);
+
                 if (!getBufferStrategy().contentsLost()) {
                     getBufferStrategy().show();
                     Thread.sleep(1);

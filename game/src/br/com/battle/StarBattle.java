@@ -1,21 +1,26 @@
 package br.com.battle;
 
 import br.pucpr.jge.GameFrame;
+import br.pucpr.jge.GameManager;
 import br.pucpr.jge.InputManager;
 import br.pucpr.jge.Steps;
 
 import java.awt.*;
 
-import static java.awt.event.KeyEvent.*;
-import static java.awt.event.KeyEvent.VK_SPACE;
+import static java.awt.event.KeyEvent.VK_ESCAPE;
 
 public class StarBattle implements Steps {
-    private Ship ship = new Ship();
-    private Shot shot = null;
-
     @Override
     public void load() {
-        ship.load();
+        GameManager.getInstance().add(new Ship());
+
+        for (var y = 0; y < 4; y++) {
+            for (var x = 0; x < 5; x++) {
+                var xOff = 50 + 50 * (y % 2);
+                var alien = new Alien(x * 150 + xOff, y * 75 + 25);
+                GameManager.getInstance().add(alien);
+            }
+        }
     }
 
     @Override
@@ -24,18 +29,6 @@ public class StarBattle implements Steps {
             return false;
         }
 
-        ship.update(s, keys);
-
-        //Lógica de atirar
-        if (keys.isDown(VK_SPACE) && shot == null) {
-            shot = new Shot(ship.getX(), ship.getY());
-        }
-
-        //Faz o tiro voar
-        if (shot != null) {
-            shot.update(s, keys);
-            if (shot.getY() < -50) shot = null;
-        }
         return true;
     }
 
@@ -43,9 +36,6 @@ public class StarBattle implements Steps {
     public void draw(Graphics2D g2d) {
         g2d.setColor(Color.BLACK);
         g2d.fillRect(0, 0, 800, 600);
-
-        ship.draw(g2d);
-        if (shot != null) shot.draw(g2d);
     }
 
     @Override
