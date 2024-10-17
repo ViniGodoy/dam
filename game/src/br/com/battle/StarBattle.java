@@ -5,37 +5,57 @@ import br.pucpr.jge.InputManager;
 import br.pucpr.jge.Steps;
 
 import java.awt.*;
+import java.util.List;
+import java.util.ArrayList;
 
 import static java.awt.event.KeyEvent.*;
-import static java.awt.event.KeyEvent.VK_SPACE;
 
 public class StarBattle implements Steps {
     private Ship ship = new Ship();
-    private Shot shot = null;
+    private List<Alien> aliens = new ArrayList<>();
+    private List<Shot> shots = new ArrayList<>();
+    private double shotInterval = 1;
 
     @Override
     public void load() {
         ship.load();
+        for (int x = 0; x < 5; x++) {
+            for (int y = 0; y < 4; y++) {
+                var xOff = 50 * (y % 2) + 50;
+                var alien = new Alien(x * 150 + xOff, y * 75 + 25);
+                alien.load();
+                aliens.add(alien);
+            }
+        }
     }
 
     @Override
     public boolean update(double s, InputManager keys) {
+        shotInterval += s;
         if (keys.isDown(VK_ESCAPE)) {
             return false;
         }
 
+        if (keys.isDown(VK_SPACE) && shotInterval > 0.3) {
+            var shot = new Shot(ship.getX() + 25, ship.getY());
+            shot.load();
+            shots.add(shot);
+            shotInterval = 0;
+        }
+
         ship.update(s, keys);
-
-        //Lógica de atirar
-        if (keys.isDown(VK_SPACE) && shot == null) {
-            shot = new Shot(ship.getX(), ship.getY());
+        for (var alien : aliens) {
+            alien.update(s, keys);
         }
-
-        //Faz o tiro voar
-        if (shot != null) {
+        var it = shots.iterator();
+        while (it.hasNext()) {
+            var shot = it.next();
             shot.update(s, keys);
-            if (shot.getY() < -50) shot = null;
+            if (shot.getY() < 10) {
+                it.remove();
+            }
         }
+
         return true;
     }
 
@@ -45,7 +65,12 @@ public class StarBattle implements Steps {
         g2d.fillRect(0, 0, 800, 600);
 
         ship.draw(g2d);
-        if (shot != null) shot.draw(g2d);
+        for (var alien : aliens) {
+            alien.draw(g2d);
+        }
+        for (var shot : shots) {
+            shot.draw(g2d);
+        }
     }
 
     @Override

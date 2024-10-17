@@ -6,12 +6,15 @@ import br.pucpr.jge.Loader;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class Shot {
+public class Alien {
     private double x;
     private double y;
+    private double t = 0;
+    private double initialX;
     private BufferedImage sprite;
 
-    public Shot(double x, double y) {
+    public Alien(double x, double y) {
+        this.initialX = x;
         this.x = x;
         this.y = y;
     }
@@ -25,14 +28,15 @@ public class Shot {
     }
 
     public void load() {
-        sprite = new Loader().loadImage("/image/shot.png");
+        sprite = new Loader().loadImage("/image/destroyer.png");
     }
+
     public void update(double s, InputManager keys) {
-        y -= 800 * s;
+        t += s;
+        x = initialX + Math.sin(t) * 50;
     }
 
     public void draw(Graphics2D g2d) {
-        g2d.setColor(Color.YELLOW);
-        g2d.drawImage(sprite, (int) x, (int) y,null);
+        g2d.drawImage(sprite, (int)x, (int)y, null);
     }
 }

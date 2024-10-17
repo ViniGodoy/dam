@@ -10,9 +10,9 @@ import static java.awt.event.KeyEvent.VK_LEFT;
 import static java.awt.event.KeyEvent.VK_RIGHT;
 
 public class Ship {
-    private BufferedImage img;
+    private BufferedImage sprite;
     private double x;
-    private double y = 400;
+    private double y = 500;
 
     public double getX() {
         return x;
@@ -23,8 +23,7 @@ public class Ship {
     }
 
     public void load() {
-        var loader = new Loader();
-        img = loader.loadImage("/ship.png");
+        sprite = new Loader().loadImage("/image/intruder.png");
     }
 
     public void update(double s, InputManager keys) {
@@ -37,10 +36,6 @@ public class Ship {
 
     public void draw(Graphics2D g2d) {
         g2d.setColor(Color.WHITE);
-        g2d.drawImage(img,
-            (int) x, (int)y,
-            img.getWidth() / 2, img.getHeight() / 2,
-            null
-        );
+        g2d.drawImage(sprite, (int) x, (int)y, null);
     }
 }
